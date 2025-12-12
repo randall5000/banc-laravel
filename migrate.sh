@@ -12,10 +12,18 @@ if ! command -v composer &> /dev/null; then
         echo "⚠️  'composer' not in PATH, but found at /usr/local/bin/composer. Using that."
         COMPOSER_BIN="/usr/local/bin/composer"
     else
-        echo "❌ Error: 'composer' is not installed or not in your PATH."
-        echo "Please install Composer first: https://getcomposer.org/"
-        echo "If you have it installed, make sure it is in your PATH or at /usr/local/bin/composer"
-        exit 1
+        echo "❌ Error: 'composer' could not be found automatically."
+        echo "Please enter the full path to your composer executable (e.g. /usr/bin/composer):"
+        read -r USER_COMPOSER_PATH
+        
+        if [ -n "$USER_COMPOSER_PATH" ] && [ -f "$USER_COMPOSER_PATH" ]; then
+             echo "✅ Using provided composer path: $USER_COMPOSER_PATH"
+             COMPOSER_BIN="$USER_COMPOSER_PATH"
+        else
+            echo "❌ Invalid path provided or file does not exist."
+            echo "Please install Composer first: https://getcomposer.org/"
+            exit 1
+        fi
     fi
 fi
 
