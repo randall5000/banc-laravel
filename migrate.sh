@@ -82,16 +82,16 @@ echo "🔌 Installing Livewire..."
 $PHP_BIN $COMPOSER_BIN require livewire/livewire
 
 echo "📂 Copying migration files..."
-# Copy directories from source to new project
-cp -R ../"$SOURCE_DIR"/database/migrations/* database/migrations/
-cp -R ../"$SOURCE_DIR"/app/Models/* app/Models/
-cp -R ../"$SOURCE_DIR"/app/Http/Controllers/* app/Http/Controllers/
-cp -R ../"$SOURCE_DIR"/resources/views/* resources/views/
-cp -R ../"$SOURCE_DIR"/routes/* routes/
+# Copy directories from source to new project (force overwrite)
+cp -Rf ../"$SOURCE_DIR"/database/migrations/* database/migrations/
+cp -Rf ../"$SOURCE_DIR"/app/Models/* app/Models/
+cp -Rf ../"$SOURCE_DIR"/app/Http/Controllers/* app/Http/Controllers/
+cp -Rf ../"$SOURCE_DIR"/resources/views/* resources/views/
+cp -Rf ../"$SOURCE_DIR"/routes/* routes/
 
 # Create missing directories if they don't exist
 mkdir -p app/Livewire
-cp -R ../"$SOURCE_DIR"/app/Livewire/* app/Livewire/
+cp -Rf ../"$SOURCE_DIR"/app/Livewire/* app/Livewire/
 
 echo "✅ Files copied successfully."
 
