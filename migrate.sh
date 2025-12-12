@@ -6,10 +6,17 @@ echo "🚀 Starting Banconaut Migration Setup..."
 echo "ℹ️  Run this script ON YOUR SERVER where you want to install the Laravel app."
 
 # Check for Composer
+COMPOSER_BIN="composer"
 if ! command -v composer &> /dev/null; then
-    echo "❌ Error: 'composer' is not installed or not in your PATH."
-    echo "Please install Composer first: https://getcomposer.org/"
-    exit 1
+    if [ -f "/usr/local/bin/composer" ]; then
+        echo "⚠️  'composer' not in PATH, but found at /usr/local/bin/composer. Using that."
+        COMPOSER_BIN="/usr/local/bin/composer"
+    else
+        echo "❌ Error: 'composer' is not installed or not in your PATH."
+        echo "Please install Composer first: https://getcomposer.org/"
+        echo "If you have it installed, make sure it is in your PATH or at /usr/local/bin/composer"
+        exit 1
+    fi
 fi
 
 # Check for PHP
@@ -40,12 +47,12 @@ fi
 
 echo "📦 Creating new Laravel project..."
 # Using --quiet to reduce noise, remove it if you want to see standard output
-composer create-project laravel/laravel "$PROJECT_NAME"
+$COMPOSER_BIN create-project laravel/laravel "$PROJECT_NAME"
 
 cd "$PROJECT_NAME" || exit
 
 echo "🔌 Installing Livewire..."
-composer require livewire/livewire
+$COMPOSER_BIN require livewire/livewire
 
 echo "📂 Copying migration files..."
 # Copy directories from source to new project
