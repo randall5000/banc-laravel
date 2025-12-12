@@ -81,17 +81,33 @@ cd "$PROJECT_NAME" || exit
 echo "🔌 Installing Livewire..."
 $PHP_BIN $COMPOSER_BIN require livewire/livewire
 
-echo "📂 Copying migration files..."
-# Copy directories from source to new project (force overwrite)
-cp -Rf ../"$SOURCE_DIR"/database/migrations/* database/migrations/
-cp -Rf ../"$SOURCE_DIR"/app/Models/* app/Models/
-cp -Rf ../"$SOURCE_DIR"/app/Http/Controllers/* app/Http/Controllers/
-cp -Rf ../"$SOURCE_DIR"/resources/views/* resources/views/
-cp -Rf ../"$SOURCE_DIR"/routes/* routes/
+# Get absolute path to source directory
+ROOT_DIR=$(pwd)
+ABS_SOURCE_DIR="$ROOT_DIR/laravel_migration"
+
+if [ ! -d "$ABS_SOURCE_DIR" ]; then
+    echo "❌ Error: Source directory '$ABS_SOURCE_DIR' not found."
+    exit 1
+fi
+
+echo "📂 Copying migration files from $ABS_SOURCE_DIR..."
+# Copy with absolute paths
+cp -Rf "$ABS_SOURCE_DIR"/database/migrations/* database/migrations/
+cp -Rf "$ABS_SOURCE_DIR"/app/Models/* app/Models/
+cp -Rf "$ABS_SOURCE_DIR"/app/Http/Controllers/* app/Http/Controllers/
+cp -Rf "$ABS_SOURCE_DIR"/resources/views/* resources/views/
+cp -Rf "$ABS_SOURCE_DIR"/routes/* routes/
 
 # Create missing directories if they don't exist
 mkdir -p app/Livewire
-cp -Rf ../"$SOURCE_DIR"/app/Livewire/* app/Livewire/
+cp -Rf "$ABS_SOURCE_DIR"/app/Livewire/* app/Livewire/
+
+echo "✅ Files copied."
+
+# Verify Route File
+echo "🔍 Verifying routes/web.php content:"
+head -n 10 routes/web.php
+echo "-----------------------------------"
 
 echo "✅ Files copied successfully."
 
