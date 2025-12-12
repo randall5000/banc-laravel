@@ -28,9 +28,28 @@ if ! command -v composer &> /dev/null; then
 fi
 
 # Check for PHP
+PHP_BIN="php"
 if ! command -v php &> /dev/null; then
-    echo "❌ Error: 'php' is not installed."
-    exit 1
+    if [ -f "/usr/bin/php" ]; then
+        echo "⚠️  'php' not in PATH, but found at /usr/bin/php. Using that."
+        PHP_BIN="/usr/bin/php"
+    elif [ -f "/usr/local/bin/php" ]; then
+        echo "⚠️  'php' not in PATH, but found at /usr/local/bin/php. Using that."
+        PHP_BIN="/usr/local/bin/php"
+    else
+        echo "❌ Error: 'php' could not be found automatically."
+        echo "Please enter the full path to your php executable (e.g. /usr/bin/php):"
+        read -r USER_PHP_PATH
+        
+        if [ -n "$USER_PHP_PATH" ] && [ -f "$USER_PHP_PATH" ]; then
+             echo "✅ Using provided php path: $USER_PHP_PATH"
+             PHP_BIN="$USER_PHP_PATH"
+        else
+            echo "❌ Invalid path provided or file does not exist."
+            echo "Please install PHP first."
+            exit 1
+        fi
+    fi
 fi
 
 PROJECT_NAME="banconaut-laravel"
@@ -55,12 +74,12 @@ fi
 
 echo "📦 Creating new Laravel project..."
 # Using --quiet to reduce noise, remove it if you want to see standard output
-$COMPOSER_BIN create-project laravel/laravel "$PROJECT_NAME"
+$PHP_BIN $COMPOSER_BIN create-project laravel/laravel "$PROJECT_NAME"
 
 cd "$PROJECT_NAME" || exit
 
 echo "🔌 Installing Livewire..."
-$COMPOSER_BIN require livewire/livewire
+$PHP_BIN $COMPOSER_BIN require livewire/livewire
 
 echo "📂 Copying migration files..."
 # Copy directories from source to new project
