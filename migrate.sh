@@ -2,6 +2,10 @@
 
 # migrate.sh - Automated setup script for Banconaut Laravel Migration
 
+# Get absolute path to source directory (MUST be done before cd)
+ROOT_DIR=$(pwd)
+ABS_SOURCE_DIR="$ROOT_DIR/laravel_migration"
+
 echo "🚀 Starting Banconaut Migration Setup..."
 echo "ℹ️  Run this script ON YOUR SERVER where you want to install the Laravel app."
 
@@ -81,9 +85,10 @@ cd "$PROJECT_NAME" || exit
 echo "🔌 Installing Livewire..."
 $PHP_BIN $COMPOSER_BIN require livewire/livewire
 
-# Get absolute path to source directory
+# Get absolute path to source directory (MUST be done before cd)
 ROOT_DIR=$(pwd)
 ABS_SOURCE_DIR="$ROOT_DIR/laravel_migration"
+
 
 if [ ! -d "$ABS_SOURCE_DIR" ]; then
     echo "❌ Error: Source directory '$ABS_SOURCE_DIR' not found."
