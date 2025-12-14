@@ -85,9 +85,7 @@ cd "$PROJECT_NAME" || exit
 echo "🔌 Installing Livewire..."
 $PHP_BIN $COMPOSER_BIN require livewire/livewire
 
-# Get absolute path to source directory (MUST be done before cd)
-ROOT_DIR=$(pwd)
-ABS_SOURCE_DIR="$ROOT_DIR/laravel_migration"
+
 
 
 if [ ! -d "$ABS_SOURCE_DIR" ]; then
