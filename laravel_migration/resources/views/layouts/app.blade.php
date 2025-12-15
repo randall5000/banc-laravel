@@ -41,15 +41,15 @@
                     <a href="#" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">Discover</a>
                     <a href="#" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">Map</a>
                     <a href="#" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">Community</a>
-                    <button class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+                    <a href="{{ route('benches.create') }}" class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
                         Add Bench
-                    </button>
+                    </a>
                 </nav>
             </div>
         </header>
 
         <div class="min-h-screen pt-16">
-            {{ $slot }}
+            @yield('content')
         </div>
 
         <footer class="bg-gray-50 border-t border-gray-200 mt-16">

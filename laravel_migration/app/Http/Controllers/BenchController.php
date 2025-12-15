@@ -35,11 +35,44 @@ class BenchController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('benches.create');
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        // Validation and storage logic would go here
-        // Simulating the upload endpoint
+        $validated = $request->validate([
+            'location' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'town' => 'nullable|string|max:255',
+            'province' => 'nullable|string|max:255',
+            'description' => 'required|string',
+            'photo' => 'required|image|max:10240', // Max 10MB
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+        ]);
+
+        $path = $request->file('photo')->store('benches', 'public');
+
+        $bench = Bench::create([
+            'location' => $validated['location'],
+            'country' => $validated['country'],
+            'town' => $validated['town'],
+            'province' => $validated['province'],
+            'description' => $validated['description'],
+            'image_url' => '/storage/' . $path, // We will use the storage link
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'likes' => 0,
+            'is_tribute' => false,
+        ]);
+
+        return redirect()->route('benches.show', $bench);
     }
 }
