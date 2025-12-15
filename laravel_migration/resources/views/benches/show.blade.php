@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     <div class="max-w-7xl mx-auto px-6 py-12">
         <div class="mb-6">
             <a href="{{ route('home') }}" class="inline-flex items-center text-sm text-gray-500 hover:text-black transition-colors">
@@ -109,4 +111,5 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection
+
