@@ -99,7 +99,7 @@
             @else
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($benches as $bench)
-                        <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+                        <a href="{{ route('benches.show', $bench->id) }}" class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 block cursor-pointer">
                             <!-- Image -->
                             <div class="aspect-[4/3] overflow-hidden relative bg-gray-100">
                                 <img 
@@ -138,12 +138,8 @@
                                         {{ number_format($bench->distance, 1) }} km away
                                     </div>
                                 @endif
-                                
-                                <a href="{{ route('benches.show', $bench->id) }}" class="mt-4 block w-full text-center py-2 bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-lg text-sm font-medium transition-colors">
-                                    View Details
-                                </a>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             @endif
