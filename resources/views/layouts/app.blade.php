@@ -35,8 +35,8 @@
                 </a>
         
                 <!-- Desktop Nav -->
-                <nav class="hidden md:flex items-center gap-8">
-                    <a href="{{ route('home') }}" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">Discover</a>
+                <nav class="hidden md:flex items-center gap-4">
+                    <!-- <a href="{{ route('home') }}" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">Discover</a> -->
                     <button 
                         onclick="navigator.geolocation.getCurrentPosition(
                             (pos) => {
@@ -46,9 +46,9 @@
                             },
                             (err) => alert('Please allow location access to find benches near you.')
                         )"
-                        class="text-sm font-medium text-gray-600 hover:text-black transition-colors"
+                        class="px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
                     >
-                        See Benches Near Me
+                        Benches near me
                     </button>
                     <a href="{{ route('benches.create') }}" class="text-white px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style="background-color: #FF385C;">
                         Add Bench
@@ -76,7 +76,7 @@
                      style="display: none;">
                     
                     <nav class="flex flex-col gap-6 text-xl font-medium text-gray-900">
-                        <a href="{{ route('home') }}" class="py-2 border-b border-gray-100">Discover</a>
+                        <!-- <a href="{{ route('home') }}" class="py-2 border-b border-gray-100">Discover</a> -->
                         <button 
                             @click="mobileMenuOpen = false; navigator.geolocation.getCurrentPosition(
                                 (pos) => {
@@ -86,9 +86,9 @@
                                 },
                                 (err) => alert('Please allow location access to find benches near you.')
                             )"
-                            class="text-left py-2 border-b border-gray-100"
+                            class="text-left py-2 border-b border-gray-100 text-blue-600 font-semibold"
                         >
-                            See Benches Near Me
+                            Benches near me
                         </button>
                         <a href="{{ route('benches.create') }}" class="py-2 border-b border-gray-100 text-[#FF385C]">Add Bench</a>
                     </nav>
