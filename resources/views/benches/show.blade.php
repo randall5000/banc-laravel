@@ -11,7 +11,37 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <!-- Left Column: Carousel & Map -->
-            <div class="space-y-8" x-data="{ activeSlide: 0, lightboxOpen: false, slides: {{ $bench->photos->map(fn($p) => ['url' => $p->photo_url, 'user' => $p->user_name])->toJson() }} }">
+            <div class="space-y-8" x-data="{ 
+                activeSlide: 0, 
+                lightboxOpen: false, 
+                likes: {{ $bench->likes }},
+                userLiked: {{ session()->has('liked_bench_' . $bench->id) ? 'true' : 'false' }},
+                slides: {{ $bench->photos->map(fn($p) => ['url' => $p->photo_url, 'user' => $p->user_name])->toJson() }},
+                async likeBench() {
+                    if (this.userLiked) return;
+                    
+                    // Optimistic update
+                    this.userLiked = true;
+                    this.likes++;
+
+                    try {
+                        const response = await fetch('{{ route('benches.like', $bench) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                            }
+                        });
+                        const data = await response.json();
+                        this.likes = data.likes; // Sync with server
+                    } catch (e) {
+                        // Revert on error
+                        this.userLiked = false;
+                        this.likes--;
+                        console.error('Like failed', e);
+                    }
+                }
+            }">
                 <!-- Fallback if no photos (shouldn't happen with validation, but safe) -->
                 @if($bench->photos->isEmpty())
                      <div class="aspect-[4/3] bg-gray-100 rounded-2xl overflow-hidden shadow-sm relative cursor-zoom-in group" @click="lightboxOpen = true">
@@ -46,11 +76,16 @@
                                 
                                 <!-- 3. Right Overlay Group (Likes & Tribute) -->
                                 <div class="absolute top-4 right-4 flex flex-col gap-2 items-end">
-                                    <!-- Likes -->
-                                    <div class="bg-white/90 backdrop-blur-md text-red-500 text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                                        {{ $bench->likes }}
-                                    </div>
+                                    <!-- Likes (Interactive) -->
+                                    <button 
+                                        @click.stop="likeBench()" 
+                                        class="bg-white/90 backdrop-blur-md text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-sm transition-all active:scale-95 group/like"
+                                        :class="userLiked ? 'text-red-500 bg-red-50' : 'text-gray-600 hover:text-red-500'"
+                                        :disabled="userLiked"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="transition-colors" :class="userLiked ? 'fill-current' : 'fill-none'"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                        <span x-text="likes"></span>
+                                    </button>
                                     
                                     <!-- Tribute Badge -->
                                     @if($bench->is_tribute)

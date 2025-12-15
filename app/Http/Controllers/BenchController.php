@@ -137,4 +137,30 @@ class BenchController extends Controller
 
         return redirect()->route('benches.show', $bench);
     }
+    }
+
+    /**
+     * Like a bench.
+     */
+    public function like(Request $request, Bench $bench)
+    {
+        $sessionId = $request->session()->getId();
+        $likedKey = 'liked_bench_' . $bench->id;
+
+        if ($request->session()->has($likedKey)) {
+            return response()->json([
+                'likes' => $bench->likes,
+                'liked' => true,
+                'message' => 'You already liked this bench.'
+            ]);
+        }
+
+        $bench->increment('likes');
+        $request->session()->put($likedKey, true);
+
+        return response()->json([
+            'likes' => $bench->likes,
+            'liked' => true
+        ]);
+    }
 }
