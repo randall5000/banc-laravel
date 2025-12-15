@@ -41,8 +41,21 @@
                 @error('photo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Location Details -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Location Logic -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" 
+                 x-data="{ 
+                    countries: {{ json_encode($locationData) }},
+                    selectedCountry: '',
+                    provinces: [],
+                    updateProvinces() {
+                        this.provinces = this.countries[this.selectedCountry] || [];
+                        // Reset province if not in new list
+                        if (!this.provinces.includes($refs.provinceInput.value)) {
+                            $refs.provinceInput.value = '';
+                        }
+                    }
+                 }"
+            >
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Title / Location Name</label>
                     <input type="text" name="location" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. Sunset Point Bench" required>
@@ -52,12 +65,11 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
                     <div class="relative">
-                        <select name="country" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black appearance-none bg-white py-2 pl-3 pr-8" required>
+                        <select name="country" x-model="selectedCountry" @change="updateProvinces()" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black appearance-none bg-white py-2 pl-3 pr-8" required>
                             <option value="">Select a country...</option>
-                            @foreach($countries as $c)
-                                <option value="{{ $c }}">{{ $c }}</option>
-                            @endforeach
-                            <option value="Other">Other</option>
+                            <template x-for="(regions, country) in countries" :key="country">
+                                <option :value="country" x-text="country"></option>
+                            </template>
                         </select>
                          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -68,13 +80,24 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">State / Province</label>
-                        <input type="text" name="province" list="province-list" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. BC" >
-                        <datalist id="province-list">
-                            @foreach($existingProvinces as $p)
-                                <option value="{{ $p }}">
-                            @endforeach
-                        </datalist>
+                        
+                        <!-- Show Dropdown if regions exist -->
+                        <div x-show="provinces.length > 0" class="relative">
+                            <select name="province" x-ref="provinceInput" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black appearance-none bg-white py-2 pl-3 pr-8">
+                                <option value="">Select Region...</option>
+                                <template x-for="province in provinces" :key="province">
+                                    <option :value="province" x-text="province"></option>
+                                </template>
+                            </select>
+                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+
+                        <!-- Fallback Text Input if no regions (or 'Other' selected) -->
+                        <input x-show="provinces.length === 0" type="text" name="province" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. Region">
                     </div>
+
                     <div>
                          <label class="block text-sm font-medium text-gray-700 mb-1">Town / City</label>
                          <input type="text" name="town" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. Vancouver" >
