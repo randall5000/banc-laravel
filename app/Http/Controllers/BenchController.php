@@ -89,6 +89,9 @@ class BenchController extends Controller
             'user_name' => 'nullable|string|max:255', // Allow attribution
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'is_tribute' => 'nullable|boolean',
+            'tribute_name' => 'nullable|string|max:255',
+            'tribute_date' => 'nullable|date',
         ]);
 
         $mainImageUrl = null;
@@ -104,7 +107,9 @@ class BenchController extends Controller
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
             'likes' => 0,
-            'is_tribute' => false,
+            'is_tribute' => $request->has('is_tribute'),
+            'tribute_name' => $validated['tribute_name'] ?? null,
+            'tribute_date' => $validated['tribute_date'] ?? null,
         ]);
 
         $uploadUser = $validated['user_name'] ?? 'Anonymous';
