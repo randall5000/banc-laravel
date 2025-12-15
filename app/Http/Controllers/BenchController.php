@@ -159,7 +159,7 @@ class BenchController extends Controller
         $request->session()->put($likedKey, true);
 
         return response()->json([
-            'likes' => $bench->likes,
+            'likes' => $bench->fresh()->likes,
             'liked' => true
         ]);
     }
