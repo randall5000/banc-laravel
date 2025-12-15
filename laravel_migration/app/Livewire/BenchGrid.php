@@ -38,8 +38,7 @@ class BenchGrid extends Component
                 $q->where('location', 'like', '%' . $this->searchQuery . '%')
                   ->orWhere('country', 'like', '%' . $this->searchQuery . '%')
                   ->orWhere('town', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('province', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhereRaw("CONCAT_WS(', ', town, province, country) LIKE ?", ['%' . $this->searchQuery . '%']);
+                  ->orWhere('province', 'like', '%' . $this->searchQuery . '%');
             });
         }
 
@@ -48,7 +47,7 @@ class BenchGrid extends Component
             $query->where('country', $this->selectedCountry);
         }
 
-        // Sorting
+        // Database Sorting (Simple fields)
         switch ($this->sortBy) {
             case 'oldest':
                 $query->orderBy('created_at', 'asc');
@@ -60,29 +59,39 @@ class BenchGrid extends Component
                 $query->orderBy('likes', 'asc');
                 break;
             case 'nearest':
-                // complex sorting typically done in DB if feasible, or collection info
-                // verifying if userLocation is available
-                if ($this->userLocation) {
-                    $lat = $this->userLocation['lat'];
-                    $lng = $this->userLocation['lng'];
-                     $query->selectRaw(
-                        '*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance', 
-                        [$lat, $lng, $lat]
-                    )->orderBy('distance');
-                } else {
-                     $query->orderBy('created_at', 'desc');
-                }
+                // Handled in PHP below
                 break;
             default: // newest
                 $query->orderBy('created_at', 'desc');
                 break;
         }
 
-        return $query->with(['photos'])->get(); 
-        // Note: In real app, standard pagination ->paginate(12) creates a LengthAwarePaginator.
-        // If sorting by calculated distance, standard pagination needs a DB view or raw query.
-        // For simplicity here, fetching all ->get() to mimic the client-side React behavior for now, 
-        // or we could stick to pagination if the list is huge.
+        $benches = $query->with(['photos'])->get();
+
+        // PHP-side Sorting for 'nearest' (SQLite-safe)
+        if ($this->sortBy === 'nearest' && $this->userLocation) {
+            $lat = $this->userLocation['lat'];
+            $lng = $this->userLocation['lng'];
+
+            $benches = $benches->map(function ($bench) use ($lat, $lng) {
+                // Approximate distance calculation (Haversine)
+                if ($bench->latitude && $bench->longitude) {
+                    $earthRadius = 6371;
+                    $dLat = deg2rad($bench->latitude - $lat);
+                    $dLon = deg2rad($bench->longitude - $lng);
+                    $a = sin($dLat/2) * sin($dLat/2) +
+                         cos(deg2rad($lat)) * cos(deg2rad($bench->latitude)) *
+                         sin($dLon/2) * sin($dLon/2);
+                    $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+                    $bench->distance = $earthRadius * $c;
+                } else {
+                    $bench->distance = 999999;
+                }
+                return $bench;
+            })->sortBy('distance')->values();
+        }
+
+        return $benches;
     }
 
     public function getCountriesProperty()
