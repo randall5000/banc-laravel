@@ -30,11 +30,8 @@
         <!-- Header -->
         <header class="fixed top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100">
             <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                    <div class="bg-black text-white p-2 rounded-lg group-hover:bg-gray-800 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M5 12v6a1 1 0 0 0 1 1h2"/><path d="M18 12v6a1 1 0 0 1-1 1h-2"/><path d="M12 12v7"/></svg>
-                    </div>
-                    <span class="font-bold text-xl tracking-tight">Banconaut</span>
+                <a href="{{ route('home') }}" class="flex items-center group">
+                    <img src="/images/seeds/banconauts_logo.jpg" alt="Banconauts" class="h-[140px] w-auto">
                 </a>
         
                 <nav class="hidden md:flex items-center gap-8">
