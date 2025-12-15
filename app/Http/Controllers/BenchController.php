@@ -84,25 +84,49 @@ class BenchController extends Controller
             'town' => 'nullable|string|max:255',
             'province' => 'nullable|string|max:255',
             'description' => 'required|string',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // Max 10MB
+            'photos' => 'required|array|min:1',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // Max 10MB per file
+            'user_name' => 'nullable|string|max:255', // Allow attribution
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
 
-        $path = $request->file('photo')->store('benches', 'public');
-
+        $mainImageUrl = null;
+        
+        // Create the bench first (we'll update image_url after processing first photo)
         $bench = Bench::create([
             'location' => $validated['location'],
             'country' => $validated['country'],
             'town' => $validated['town'],
             'province' => $validated['province'],
             'description' => $validated['description'],
-            'image_url' => '/storage/' . $path, // We will use the storage link
+            'image_url' => '', // Placeholder
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
             'likes' => 0,
             'is_tribute' => false,
         ]);
+
+        $uploadUser = $validated['user_name'] ?? 'Anonymous';
+
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $path = $photo->store('benches', 'public');
+                $fullUrl = '/storage/' . $path;
+
+                // First photo becomes the main cover image
+                if ($index === 0) {
+                    $bench->update(['image_url' => $fullUrl]);
+                }
+
+                $bench->photos()->create([
+                    'photo_url' => $fullUrl,
+                    'user_name' => $uploadUser, // Attribute the upload
+                    'is_primary' => $index === 0,
+                    'display_order' => $index,
+                ]);
+            }
+        }
 
         return redirect()->route('benches.show', $bench);
     }
