@@ -11,22 +11,22 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <!-- Left Column: Carousel & Map -->
-            <div class="space-y-8" x-data="{ activeSlide: 0, slides: {{ $bench->photos->map(fn($p) => ['url' => $p->photo_url, 'user' => $p->user_name])->toJson() }} }">
+            <div class="space-y-8" x-data="{ activeSlide: 0, lightboxOpen: false, slides: {{ $bench->photos->map(fn($p) => ['url' => $p->photo_url, 'user' => $p->user_name])->toJson() }} }">
                 <!-- Fallback if no photos (shouldn't happen with validation, but safe) -->
                 @if($bench->photos->isEmpty())
-                     <div class="aspect-[4/3] bg-gray-100 rounded-2xl overflow-hidden shadow-sm relative">
-                        <img src="{{ $bench->image_url }}" class="w-full h-full object-cover">
+                     <div class="aspect-[4/3] bg-gray-100 rounded-2xl overflow-hidden shadow-sm relative cursor-zoom-in group" @click="lightboxOpen = true">
+                        <img src="{{ $bench->image_url }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                          <div class="absolute bottom-4 left-4 text-white/90 text-sm font-medium bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
                             {{ $bench->created_at->format('F j, Y') }}
                         </div>
                     </div>
                 @else
                     <!-- Carousel Wrap -->
-                    <div class="relative group rounded-2xl overflow-hidden shadow-sm bg-black aspect-[4/3]">
+                    <div class="relative group rounded-2xl overflow-hidden shadow-sm bg-black aspect-[4/3] cursor-zoom-in" @click="lightboxOpen = true">
                         <!-- Main Slides -->
                         <template x-for="(slide, index) in slides" :key="index">
                             <div x-show="activeSlide === index" class="absolute inset-0 transition-opacity duration-300">
-                                <img :src="slide.url" class="w-full h-full object-cover">
+                                <img :src="slide.url" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                                 
                                 <!-- Overlays -->
                                 <!-- 1. User Pill (Top Left) -->
@@ -43,11 +43,11 @@
                             </div>
                         </template>
 
-                        <!-- Navigation Arrows -->
-                        <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors opacity-0 group-hover:opacity-100">
+                        <!-- Navigation Arrows (Stop propagation to prevent opening lightbox when navigating) -->
+                        <button @click.stop="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors opacity-0 group-hover:opacity-100">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                         </button>
-                        <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors opacity-0 group-hover:opacity-100">
+                        <button @click.stop="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors opacity-0 group-hover:opacity-100">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                         </button>
                     </div>
@@ -61,6 +61,47 @@
                         </template>
                     </div>
                 @endif
+
+                <!-- Lightbox Overlay -->
+                <!-- Use x-teleport if available, but simple fixed positioning works too -->
+                <div x-show="lightboxOpen" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     @keydown.escape.window="lightboxOpen = false"
+                     class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4" 
+                     style="display: none;">
+                    
+                    <!-- Close Button -->
+                    <button @click="lightboxOpen = false" class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+
+                    <!-- Main Image -->
+                    <div class="relative w-full h-full flex items-center justify-center" @click.outside="lightboxOpen = false">
+                         <template x-for="(slide, index) in slides" :key="index">
+                            <img x-show="activeSlide === index" :src="slide.url" class="max-w-full max-h-full object-contain shadow-2xl">
+                         </template>
+                         
+                         <!-- Fallback Image for Empty Photos Case -->
+                         @if($bench->photos->isEmpty())
+                             <img src="{{ $bench->image_url }}" class="max-w-full max-h-full object-contain shadow-2xl">
+                         @endif
+                    </div>
+
+                    <!-- Navigation Arrows (Lightbox) -->
+                    @if($bench->photos->count() > 1)
+                        <button @click.stop="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-6 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors backdrop-blur-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <button @click.stop="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-6 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors backdrop-blur-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    @endif
+                </div>
             </div>
 
             <!-- Right Column: Details -->
@@ -96,15 +137,27 @@
                 </div>
 
                 @if($bench->is_tribute)
-                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-8">
-                        <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                            In Memory Of
-                        </h3>
-                        <p class="text-xl text-gray-900 font-serif italic">{{ $bench->tribute_name }}</p>
-                        @if($bench->tribute_date)
-                            <p class="text-gray-500 text-sm mt-1">{{ $bench->tribute_date->format('Y') }}</p>
-                        @endif
+                    <div class="border-t border-gray-100 pt-6 mt-8 mb-8" x-data="{ expanded: false }">
+                        <button @click="expanded = !expanded" class="flex items-center justify-between w-full group">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-semibold text-gray-900 flex items-center gap-2 text-lg">
+                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                    In Memory Of
+                                </h3>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300" :class="expanded ? 'rotate-180' : ''"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                        </button>
+                        
+                        <div x-show="expanded" x-collapse style="display: none;">
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mt-4">
+                                <p class="text-xl text-gray-900 font-serif italic">{{ $bench->tribute_name }}</p>
+                                @if($bench->tribute_date)
+                                    <p class="text-gray-500 text-sm mt-1">{{ $bench->tribute_date->format('Y') }}</p>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 @endif
                 
