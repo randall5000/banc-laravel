@@ -29,16 +29,19 @@
                                 <img :src="slide.url" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                                 
                                 <!-- Overlays -->
-                                <!-- 1. User Pill (Top Left) -->
-                                <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                    Uploaded by: <span x-text="slide.user || 'Anonymous'"></span>
-                                </div>
+                                <!-- 1. Bottom Left Group (User & Date) -->
+                                <div class="absolute bottom-4 left-4 flex items-center gap-2">
+                                    <!-- User Pill -->
+                                    <div class="bg-black/50 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        <span x-text="slide.user || 'Anonymous'"></span>
+                                    </div>
 
-                                <!-- 2. Date Pill (Bottom Left) - Moved from top details -->
-                                <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                    {{ $bench->created_at->format('F j, Y') }}
+                                    <!-- Date Pill (Shortened) -->
+                                    <div class="bg-black/50 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                        {{ $bench->created_at->format("M j, 'y") }}
+                                    </div>
                                 </div>
                                 
                                 <!-- 3. Right Overlay Group (Likes & Tribute) -->
