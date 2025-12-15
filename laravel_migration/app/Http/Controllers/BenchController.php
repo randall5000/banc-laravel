@@ -39,7 +39,26 @@ class BenchController extends Controller
      */
     public function create()
     {
-        return view('benches.create');
+        // Common countries list
+        $countries = [
+            'United States', 'Canada', 'United Kingdom', 'Australia', 'New Zealand', 
+            'Ireland', 'France', 'Germany', 'Italy', 'Spain', 'Portugal', 
+            'Netherlands', 'Belgium', 'Switzerland', 'Austria', 'Sweden', 
+            'Norway', 'Denmark', 'Finland', 'Japan', 'South Korea', 'China', 
+            'India', 'Brazil', 'Argentina', 'Chile', 'Mexico', 'South Africa'
+        ];
+        
+        // Add all standard countries sort of... providing a good base list
+        // In a real app we'd use a package like 'league/iso3166'
+        
+        // Get existing provinces to help autocomplete
+        $existingProvinces = Bench::select('province')
+            ->whereNotNull('province')
+            ->distinct()
+            ->orderBy('province')
+            ->pluck('province');
+
+        return view('benches.create', compact('countries', 'existingProvinces'));
     }
 
     /**
