@@ -59,6 +59,14 @@
                                 <img :src="slide.url" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                                 
                                 <!-- Overlays -->
+                                <!-- Top Left Group (Tribute) -->
+                                @if($bench->is_tribute)
+                                    <div class="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 shadow-sm border border-white/10">
+                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                         Tribute
+                                    </div>
+                                @endif
+
                                 <!-- 1. Bottom Left Group (User & Date) -->
                                 <div class="absolute bottom-4 left-4 flex items-center gap-2">
                                     <!-- User Pill -->
@@ -87,13 +95,7 @@
                                         <span x-text="likes"></span>
                                     </button>
                                     
-                                    <!-- Tribute Badge -->
-                                    @if($bench->is_tribute)
-                                        <div class="bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 shadow-sm border border-white/10">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                                            Tribute
-                                        </div>
-                                    @endif
+
                                 </div>
                             </div>
                         </template>
