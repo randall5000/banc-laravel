@@ -14,6 +14,7 @@ class BenchGrid extends Component
     public $selectedCountry = 'all';
     public $sortBy = 'newest';
     public $userLocation = null; // ['lat' => ..., 'lng' => ...]
+    public $suggestions = []; // Auto-suggest results
 
     protected $queryString = [
         'searchQuery' => ['except' => '', 'as' => 'search'],
@@ -25,6 +26,20 @@ class BenchGrid extends Component
     {
         if (in_array($propertyName, ['searchQuery', 'selectedCountry'])) {
             $this->resetPage();
+        }
+
+        if ($propertyName === 'searchQuery') {
+            if (strlen($this->searchQuery) > 1) {
+                // Fetch suggestions
+               $this->suggestions = Bench::where('location', 'like', '%' . $this->searchQuery . '%')
+                    ->orWhere('country', 'like', '%' . $this->searchQuery . '%')
+                    ->orWhere('town', 'like', '%' . $this->searchQuery . '%')
+                    ->orWhere('province', 'like', '%' . $this->searchQuery . '%')
+                    ->take(5)
+                    ->get();
+            } else {
+                $this->suggestions = [];
+            }
         }
     }
 

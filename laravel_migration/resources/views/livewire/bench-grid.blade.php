@@ -8,7 +8,7 @@
             </div>
 
             <!-- Search -->
-            <div class="mb-6">
+            <div class="mb-6 relative z-50">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
                 <div class="relative">
                     <input 
@@ -16,9 +16,27 @@
                         wire:model.live.debounce.300ms="searchQuery" 
                         placeholder="Search locations..." 
                         class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
+                        autocomplete="off"
                     >
                     <svg class="absolute left-3 top-2.5 text-gray-400 w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>
+
+                <!-- Autosuggest Dropdown -->
+                @if(!empty($suggestions))
+                    <div class="absolute w-full bg-white border border-gray-200 rounded-lg shadow-xl mt-2 overflow-hidden max-h-64 overflow-y-auto">
+                        @foreach($suggestions as $suggestion)
+                            <a href="{{ route('benches.show', $suggestion->id) }}" class="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b last:border-0 border-gray-100">
+                                <div class="w-10 h-10 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                                     <img src="{{ $suggestion->image_url }}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=Bench'">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-gray-900 truncate">{{ $suggestion->location }}</p>
+                                    <p class="text-xs text-gray-500 truncate">{{ $suggestion->town ?? $suggestion->province }}, {{ $suggestion->country }}</p>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             <!-- Sort -->
