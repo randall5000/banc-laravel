@@ -21,6 +21,7 @@ class Bench extends Model
         'is_tribute',
         'tribute_name',
         'tribute_date',
+        'tribute_message',
         'likes',
     ];
 

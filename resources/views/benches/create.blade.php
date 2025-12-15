@@ -33,6 +33,10 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Date (Optional)</label>
                         <input type="date" name="tribute_date" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none">
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
+                        <textarea name="tribute_message" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none" placeholder="A special quote or message..."></textarea>
+                    </div>
                 </div>
             </div>
 

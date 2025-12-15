@@ -92,6 +92,7 @@ class BenchController extends Controller
             'is_tribute' => 'nullable|boolean',
             'tribute_name' => 'nullable|string|max:255',
             'tribute_date' => 'nullable|date',
+            'tribute_message' => 'nullable|string',
         ]);
 
         $mainImageUrl = null;
@@ -110,6 +111,7 @@ class BenchController extends Controller
             'is_tribute' => $request->has('is_tribute'),
             'tribute_name' => $validated['tribute_name'] ?? null,
             'tribute_date' => $validated['tribute_date'] ?? null,
+            'tribute_message' => $validated['tribute_message'] ?? null,
         ]);
 
         $uploadUser = $validated['user_name'] ?? 'Anonymous';
