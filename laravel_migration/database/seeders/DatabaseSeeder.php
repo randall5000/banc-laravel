@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. A scenic bench in New Zealand
         Bench::create([
-            'image_url' => 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Lake_Tekapo_Waitaki_Canterbury_New_Zealand.jpg', // Scenic view of Lake Tekapo
+            'image_url' => '/images/seeds/tekapo.jpg', 
             'location' => 'Lake Tekapo',
             'town' => 'Tekapo',
             'province' => 'Canterbury',
@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. A tribute bench in London
         Bench::create([
-            'image_url' => 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Bench_and_Boathouse%2C_Hyde_Park_-_geograph.org.uk_-_1022576.jpg', // Hyde Park Bench
+            'image_url' => '/images/seeds/hyde.jpg', 
             'location' => 'Hyde Park',
             'town' => 'London',
             'province' => 'England',
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
 
         // 3. A rustic bench in Canada (Banff)
         Bench::create([
-            'image_url' => 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Moraine_Lake_17092005.jpg', // Moraine Lake View
+            'image_url' => '/images/seeds/moraine.jpg', 
             'location' => 'Moraine Lake',
             'town' => 'Banff',
             'province' => 'Alberta',
@@ -58,7 +58,7 @@ class DatabaseSeeder extends Seeder
 
         // 4. A city bench in New York
         Bench::create([
-            'image_url' => 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Bench_in_Central_Park_%284%29.jpg', // Central Park Bench
+            'image_url' => '/images/seeds/central.jpg', 
             'location' => 'Central Park',
             'town' => 'New York',
             'province' => 'New York',
@@ -73,7 +73,7 @@ class DatabaseSeeder extends Seeder
         
          // 5. A coastal bench in Italy
         Bench::create([
-            'image_url' => 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Atrani_-_The_Amalfi_Coast_-_Ravello_citta_della_musica_-_City_Sightseeing_Ravello_%287692815104%29.jpg', // Amalfi/Ravello Bench
+            'image_url' => '/images/seeds/amalfi.jpg', 
             'location' => 'Amalfi Coast',
             'town' => 'Positano',
             'province' => 'Salerno',
