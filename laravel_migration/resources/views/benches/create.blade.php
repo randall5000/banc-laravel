@@ -12,18 +12,30 @@
             @csrf
 
             <!-- Photo Upload -->
-            <div>
+            <div x-data="{ preview: null }">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Bench Photo</label>
                 <div class="flex items-center justify-center w-full">
-                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
+                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors overflow-hidden relative">
+                        
+                        <!-- Preview Image -->
+                        <div x-show="preview" class="absolute inset-0 w-full h-full">
+                            <img :src="preview" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                <p class="text-white font-medium">Click to change</p>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder -->
+                        <div x-show="!preview" class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
                             <svg class="w-10 h-10 mb-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                             </svg>
                             <p class="mb-2 text-sm"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                            <p class="text-xs">SVG, PNG, JPG or GIF (MAX. 10MB)</p>
+                            <p class="text-xs">SVG, PNG, JPG, GIF or WEBP (MAX. 10MB)</p>
                         </div>
-                        <input id="dropzone-file" name="photo" type="file" class="hidden" required />
+                        
+                        <input id="dropzone-file" name="photo" type="file" class="hidden" accept="image/*" required 
+                               @change="preview = URL.createObjectURL($event.target.files[0])" />
                     </label>
                 </div>
                 @error('photo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
@@ -42,9 +54,15 @@
                     <input type="text" name="country" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. Canada" required>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Town / City</label>
-                    <input type="text" name="town" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. Vancouver" >
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">State / Province</label>
+                        <input type="text" name="province" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. BC" >
+                    </div>
+                    <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-1">Town / City</label>
+                         <input type="text" name="town" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="e.g. Vancouver" >
+                    </div>
                 </div>
             </div>
 
@@ -55,23 +73,47 @@
                 @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Coordinates (Hidden/Advanced) -->
-            <div x-data="{ open: false }">
-                <button type="button" @click="open = !open" class="text-sm text-gray-500 hover:text-black flex items-center gap-1">
-                    <span x-show="!open">+ Add Coordinates (Optional)</span>
-                    <span x-show="open">- Hide Coordinates</span>
-                </button>
+            <!-- Coordinates (Advanced) -->
+            <div x-data="{ 
+                open: true, 
+                loading: false,
+                getLocation() {
+                    this.loading = true;
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                document.getElementById('lat').value = position.coords.latitude;
+                                document.getElementById('lng').value = position.coords.longitude;
+                                this.loading = false;
+                            },
+                            (error) => {
+                                alert('Error getting location: ' + error.message);
+                                this.loading = false;
+                            }
+                        );
+                    } else {
+                        alert('Geolocation is not supported by this browser.');
+                        this.loading = false;
+                    }
+                }
+            }" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                     <h3 class="text-sm font-medium text-gray-900">Coordinates</h3>
+                     <button type="button" @click="getLocation()" class="flex items-center gap-2 text-xs font-semibold bg-black text-white px-3 py-1.5 rounded-full hover:bg-gray-800 transition-colors">
+                        <span x-show="!loading">📍 Use My Location</span>
+                        <span x-show="loading">Getting location...</span>
+                     </button>
+                </div>
                 
-                <div x-show="open" class="grid grid-cols-2 gap-6 mt-4">
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
-                        <input type="text" name="latitude" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="0.000000">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Latitude</label>
+                        <input type="text" id="lat" name="latitude" class="w-full rounded-lg border-gray-300 bg-white focus:ring-black focus:border-black text-sm" placeholder="0.000000">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
-                        <input type="text" name="longitude" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black" placeholder="0.000000">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Longitude</label>
+                        <input type="text" id="lng" name="longitude" class="w-full rounded-lg border-gray-300 bg-white focus:ring-black focus:border-black text-sm" placeholder="0.000000">
                     </div>
-                    <p class="col-span-2 text-xs text-gray-500">Tip: Right-click on Google Maps to get these numbers.</p>
                 </div>
             </div>
 

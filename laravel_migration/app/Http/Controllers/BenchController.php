@@ -53,7 +53,7 @@ class BenchController extends Controller
             'town' => 'nullable|string|max:255',
             'province' => 'nullable|string|max:255',
             'description' => 'required|string',
-            'photo' => 'required|image|max:10240', // Max 10MB
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // Max 10MB
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
