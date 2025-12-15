@@ -15,7 +15,10 @@ class BenchGrid extends Component
     public $selectedCountry = 'all';
     public $sortBy = 'newest';
     public $userLocation = null; // ['lat' => ..., 'lng' => ...]
+    public $sortBy = 'newest';
+    public $userLocation = null; // ['lat' => ..., 'lng' => ...]
     public $suggestions = []; // Auto-suggest results
+    public $heroBench = null;
 
     protected $queryString = [
         'searchQuery' => ['except' => '', 'as' => 'search'],
