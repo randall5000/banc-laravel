@@ -28,7 +28,7 @@
     </head>
     <body class="font-sans antialiased text-gray-900 bg-white">
         <!-- Header -->
-        <header class="fixed top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <header class="fixed top-0 z-50 w-full bg-white border-b border-gray-100">
             <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between">
                 <a href="{{ route('home') }}" class="flex items-center group">
                     <img src="/images/seeds/banconauts_logo.png" alt="Banconauts" class="h-[140px] w-auto">
