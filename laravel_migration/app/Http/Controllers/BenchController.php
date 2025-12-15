@@ -12,13 +12,8 @@ class BenchController extends Controller
      */
     public function index()
     {
-        // Get the latest bench for the Hero section
-        // Logic from page.tsx: const heroBench = benches[0];
-        // We can fetch the featured bench separately or let the view handle it.
-        // Let's pass the hero bench explicitly.
-        
-        $heroBench = Bench::with(['photos', 'videos'])
-            ->orderBy('likes', 'desc')
+        // Get the most liked bench for the Hero section
+        $heroBench = Bench::orderBy('likes', 'desc')
             ->orderBy('created_at', 'desc')
             ->first();
 
