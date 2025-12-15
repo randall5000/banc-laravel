@@ -25,7 +25,7 @@
                     this.likes++;
 
                     try {
-                        const response = await fetch('{{ route('benches.like', $bench) }}', {
+                        const response = await fetch('/benches/{{ $bench->id }}/like', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
