@@ -204,7 +204,7 @@
                             <div class="flex items-center gap-3">
                                 <h3 class="font-semibold text-gray-900 flex items-center gap-2 text-lg">
                                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                                    In Memory Of
+                                    Tribute Details
                                 </h3>
                             </div>
                             <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition-colors">
@@ -213,13 +213,26 @@
                         </button>
                         
                         <div x-show="expanded" x-collapse style="display: none;">
-                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mt-4">
-                                <p class="text-xl text-gray-900 font-serif italic">{{ $bench->tribute_name }}</p>
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mt-4 space-y-4">
+                                <div>
+                                    <p class="text-sm text-gray-500 uppercase tracking-wide font-semibold mb-1">Dedicated To</p>
+                                    <p class="text-xl text-gray-900 font-bold">{{ $bench->tribute_name }}</p>
+                                </div>
+
                                 @if($bench->tribute_date)
-                                    <p class="text-gray-500 text-sm mt-1 mb-3">{{ $bench->tribute_date->format('Y') }}</p>
+                                    <div>
+                                        <p class="text-sm text-gray-500 uppercase tracking-wide font-semibold mb-1">Date</p>
+                                        <p class="text-gray-900">{{ $bench->tribute_date->format('F j, Y') }}</p>
+                                    </div>
                                 @endif
+
                                 @if($bench->tribute_message)
-                                    <p class="text-gray-700 font-serif leading-relaxed pt-3 border-t border-gray-200 mt-3">{{ $bench->tribute_message }}</p>
+                                    <div>
+                                        <p class="text-sm text-gray-500 uppercase tracking-wide font-semibold mb-2">Message</p>
+                                        <div class="text-gray-700 italic border-l-4 border-gray-300 pl-4 py-1 leading-relaxed bg-white p-3 rounded-r-lg">
+                                            "{{ $bench->tribute_message }}"
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                         </div>
