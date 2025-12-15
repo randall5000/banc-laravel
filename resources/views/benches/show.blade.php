@@ -41,10 +41,21 @@
                                     {{ $bench->created_at->format('F j, Y') }}
                                 </div>
                                 
-                                <!-- 3. Likes Overlay (Top Right) - Moved from details column -->
-                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-red-500 text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                                    {{ $bench->likes }}
+                                <!-- 3. Right Overlay Group (Likes & Tribute) -->
+                                <div class="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                                    <!-- Likes -->
+                                    <div class="bg-white/90 backdrop-blur-md text-red-500 text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                        {{ $bench->likes }}
+                                    </div>
+                                    
+                                    <!-- Tribute Badge -->
+                                    @if($bench->is_tribute)
+                                        <div class="bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 shadow-sm border border-white/10">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                            Tribute
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </template>
@@ -114,17 +125,8 @@
 
             <!-- Right Column: Details -->
             <div>
-                <div class="flex items-start justify-between mb-6">
+                <div class="flex items-start justify-between mb-4">
                     <div>
-                        <!-- Date removed from here (moved to overlay) -->
-                        <div class="flex items-center gap-2 mb-2">
-                            @if($bench->is_tribute)
-                                <span class="bg-black text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                                    Tribute
-                                </span>
-                            @endif
-                        </div>
                         <h1 class="text-4xl font-bold text-gray-900 mb-2 leading-tight">{{ $bench->location }}</h1>
                         <div class="flex items-center gap-2 text-gray-600 text-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
