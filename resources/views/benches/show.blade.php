@@ -10,31 +10,64 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <!-- Image Gallery -->
-            <div class="space-y-4">
-                <div class="aspect-[4/3] bg-gray-100 rounded-2xl overflow-hidden shadow-sm">
-                    <img 
-                        src="{{ $bench->image_url }}" 
-                        alt="{{ $bench->location }}" 
-                        class="w-full h-full object-cover"
-                    />
-                </div>
-                
-                @if($bench->photos->count() > 0)
-                    <div class="grid grid-cols-4 gap-4">
-                        @foreach($bench->photos as $photo)
-                            <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
-                                <img src="{{ $photo->photo_url }}" class="w-full h-full object-cover" />
+            <!-- Left Column: Carousel & Map -->
+            <div class="space-y-8" x-data="{ activeSlide: 0, slides: {{ $bench->photos->map(fn($p) => ['url' => $p->photo_url, 'user' => $p->user_name])->toJson() }} }">
+                <!-- Fallback if no photos (shouldn't happen with validation, but safe) -->
+                @if($bench->photos->isEmpty())
+                     <div class="aspect-[4/3] bg-gray-100 rounded-2xl overflow-hidden shadow-sm relative">
+                        <img src="{{ $bench->image_url }}" class="w-full h-full object-cover">
+                         <div class="absolute bottom-4 left-4 text-white/90 text-sm font-medium bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
+                            {{ $bench->created_at->format('F j, Y') }}
+                        </div>
+                    </div>
+                @else
+                    <!-- Carousel Wrap -->
+                    <div class="relative group rounded-2xl overflow-hidden shadow-sm bg-black aspect-[4/3]">
+                        <!-- Main Slides -->
+                        <template x-for="(slide, index) in slides" :key="index">
+                            <div x-show="activeSlide === index" class="absolute inset-0 transition-opacity duration-300">
+                                <img :src="slide.url" class="w-full h-full object-cover">
+                                
+                                <!-- Overlays -->
+                                <!-- 1. User Pill (Top Left) -->
+                                <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    Uploaded by: <span x-text="slide.user || 'Anonymous'"></span>
+                                </div>
+
+                                <!-- 2. Date Pill (Bottom Left) - Moved from top details -->
+                                <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    {{ $bench->created_at->format('F j, Y') }}
+                                </div>
                             </div>
-                        @endforeach
+                        </template>
+
+                        <!-- Navigation Arrows -->
+                        <button @click="activeSlide = activeSlide === 0 ? slides.length - 1 : activeSlide - 1" class="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors opacity-0 group-hover:opacity-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <button @click="activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1" class="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors opacity-0 group-hover:opacity-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Thumbnails -->
+                    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                        <template x-for="(slide, index) in slides" :key="index">
+                            <button @click="activeSlide = index" class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all" :class="activeSlide === index ? 'border-black opacity-100' : 'border-transparent opacity-60 hover:opacity-100'">
+                                <img :src="slide.url" class="w-full h-full object-cover">
+                            </button>
+                        </template>
                     </div>
                 @endif
             </div>
 
-            <!-- Details -->
+            <!-- Right Column: Details -->
             <div>
-                <div class="flex items-start justify-between mb-4">
+                <div class="flex items-start justify-between mb-6">
                     <div>
+                        <!-- Date removed from here (moved to overlay) -->
                         <div class="flex items-center gap-2 mb-2">
                             @if($bench->is_tribute)
                                 <span class="bg-black text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
@@ -42,33 +75,33 @@
                                     Tribute
                                 </span>
                             @endif
-                            <span class="text-gray-500 text-sm font-medium">{{ $bench->created_at->format('F j, Y') }}</span>
                         </div>
-                        <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $bench->location }}</h1>
-                        <div class="flex items-center gap-2 text-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <h1 class="text-4xl font-bold text-gray-900 mb-2 leading-tight">{{ $bench->location }}</h1>
+                        <div class="flex items-center gap-2 text-gray-600 text-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             {{ $bench->town ?? $bench->province ?? '' }}, {{ $bench->country }}
                         </div>
                     </div>
                     
-                    <div class="flex flex-col items-center gap-1">
-                         <button class="flex flex-col items-center gap-1 group">
-                            <div class="p-3 rounded-full bg-red-50 text-red-500 group-hover:bg-red-100 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                            </div>
-                            <span class="font-bold text-gray-900">{{ $bench->likes }}</span>
-                        </button>
-                    </div>
+                    <button class="flex flex-col items-center gap-1 group">
+                        <div class="p-4 rounded-full bg-red-50 text-red-500 group-hover:bg-red-100 transition-colors shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                        </div>
+                        <span class="font-bold text-gray-900">{{ $bench->likes }}</span>
+                    </button>
                 </div>
 
-                <div class="prose prose-lg text-gray-600 mb-8">
+                <div class="prose prose-lg text-gray-600 mb-8 leading-relaxed">
                     {{ $bench->description }}
                 </div>
 
                 @if($bench->is_tribute)
                     <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-8">
-                        <h3 class="font-semibold text-gray-900 mb-2">In Memory Of</h3>
-                        <p class="text-lg text-gray-800 font-medium">{{ $bench->tribute_name }}</p>
+                        <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                            In Memory Of
+                        </h3>
+                        <p class="text-xl text-gray-900 font-serif italic">{{ $bench->tribute_name }}</p>
                         @if($bench->tribute_date)
                             <p class="text-gray-500 text-sm mt-1">{{ $bench->tribute_date->format('Y') }}</p>
                         @endif
@@ -76,36 +109,48 @@
                 @endif
                 
                 @if($bench->latitude && $bench->longitude)
-                    <div class="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl text-blue-800 text-sm">
-                        <strong>Coordinates:</strong> {{ $bench->latitude }}, {{ $bench->longitude }}
-                        <br/>
-                        <a href="https://www.google.com/maps/search/?api=1&query={{ $bench->latitude }},{{ $bench->longitude }}" target="_blank" class="underline hover:text-blue-900 mt-1 inline-block">
-                            View on Google Maps &rarr;
-                        </a>
+                    <div class="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl text-blue-900 text-sm flex items-start gap-3">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 text-blue-600 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                         <div>
+                            <strong>Coordinates:</strong> {{ $bench->latitude }}, {{ $bench->longitude }}
+                            <br/>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ $bench->latitude }},{{ $bench->longitude }}" target="_blank" class="underline hover:text-blue-700 mt-1 inline-block">
+                                View location on Google Maps &rarr;
+                            </a>
+                        </div>
                     </div>
                 @endif
 
-                <!-- Comments Section -->
-                <div class="border-t border-gray-100 pt-8 mt-8">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Comments ({{ $bench->comments->count() }})</h2>
+                <!-- Collapsible Comments Accordion -->
+                <div class="border-t border-gray-100 pt-6 mt-8" x-data="{ expanded: false }">
+                    <button @click="expanded = !expanded" class="flex items-center justify-between w-full group">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-xl font-bold text-gray-900">Comments <span class="text-gray-400 font-normal">({{ $bench->comments->count() }})</span></h2>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300" :class="expanded ? 'rotate-180' : ''"><path d="m6 9 6 6 6-6"/></svg>
+                        </div>
+                    </button>
                     
-                    <div class="space-y-6">
-                        @forelse($bench->comments as $comment)
-                            <div class="flex gap-4">
-                                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold flex-shrink-0">
-                                    {{ substr($comment->user_name, 0, 1) }}
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="font-semibold text-gray-900">{{ $comment->user_name }}</span>
-                                        <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                    <div x-show="expanded" x-collapse style="display: none;">
+                        <div class="space-y-6 mt-6">
+                            @forelse($bench->comments as $comment)
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold flex-shrink-0 text-sm">
+                                        {{ substr($comment->user_name, 0, 1) }}
                                     </div>
-                                    <p class="text-gray-600 leading-relaxed">{{ $comment->comment }}</p>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="font-semibold text-gray-900 text-sm">{{ $comment->user_name }}</span>
+                                            <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="text-gray-600 leading-relaxed text-sm">{{ $comment->comment }}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        @empty
-                            <p class="text-gray-500 italic">No comments yet. Be the first to share your thoughts!</p>
-                        @endforelse
+                            @empty
+                                <p class="text-gray-500 italic text-sm">No comments yet. Be the first to share your thoughts!</p>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
