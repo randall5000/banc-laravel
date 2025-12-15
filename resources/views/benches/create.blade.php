@@ -11,35 +11,52 @@
         <form action="{{ route('benches.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
-            <!-- Photo Upload -->
-            <div x-data="{ preview: null }">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Bench Photo</label>
-                <div class="flex items-center justify-center w-full">
-                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors overflow-hidden relative">
-                        
-                        <!-- Preview Image -->
-                        <div x-show="preview" class="absolute inset-0 w-full h-full">
-                            <img :src="preview" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                <p class="text-white font-medium">Click to change</p>
-                            </div>
-                        </div>
-
-                        <!-- Placeholder -->
-                        <div x-show="!preview" class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-500">
-                            <svg class="w-10 h-10 mb-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                            </svg>
-                            <p class="mb-2 text-sm"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                            <p class="text-xs">SVG, PNG, JPG, GIF or WEBP (MAX. 10MB)</p>
-                        </div>
-                        
-                        <input id="dropzone-file" name="photo" type="file" class="hidden" accept="image/*" required 
-                               @change="preview = URL.createObjectURL($event.target.files[0])" />
-                    </label>
-                </div>
-                @error('photo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+            <!-- User Name (Optional Attribution) -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Uploaded By (Optional)</label>
+                <input type="text" name="user_name" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none" placeholder="Your name">
             </div>
+
+            <!-- Image Upload -->
+            <div class="mb-8" x-data="{ images: [] }">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Photos</label>
+                <div class="relative border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors group cursor-pointer">
+                    <input 
+                        type="file" 
+                        name="photos[]" 
+                        multiple
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        @change="
+                            images = [];
+                            Array.from($event.target.files).forEach(file => {
+                                let reader = new FileReader();
+                                reader.onload = (e) => { images.push(e.target.result); };
+                                reader.readAsDataURL(file);
+                            });
+                        "
+                    >
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Click to upload photos</p>
+                            <p class="text-sm text-gray-500 mt-1">SVG, PNG, JPG or WEBP (max. 10MB)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4" x-show="images.length > 0" style="display: none;">
+                    <template x-for="(img, index) in images" :key="index">
+                        <div class="aspect-square rounded-lg overflow-hidden bg-gray-100 relative shadow-sm border border-gray-100">
+                             <img :src="img" class="w-full h-full object-cover">
+                             <div x-show="index === 0" class="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded font-medium">Cover</div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            @error('photos') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
 
             <!-- Location Logic -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6" 
