@@ -33,7 +33,7 @@
                             }
                         });
                         const data = await response.json();
-                        this.likes = data.likes; // Sync with server
+                        this.likes = Math.max(this.likes, data.likes); // Keep optimistic value if server is stale
                     } catch (e) {
                         // Revert on error
                         this.userLiked = false;
