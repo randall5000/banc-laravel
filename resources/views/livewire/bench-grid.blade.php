@@ -13,7 +13,7 @@
             </button>
 
             <!-- Filter Content (Collapsible on Mobile, Visible on Desktop) -->
-            <div class="lg:!block p-6 border-t lg:border-t-0 border-gray-100" x-show="showFilters" x-collapse style="display: none;">
+            <div class="lg:!block lg:!h-auto lg:!overflow-visible p-6 border-t lg:border-t-0 border-gray-100" x-show="showFilters" x-collapse>
                 <div class="hidden lg:flex items-center justify-between mb-6">
                     <h3 class="font-semibold text-gray-900">Filters</h3>
                 </div>
