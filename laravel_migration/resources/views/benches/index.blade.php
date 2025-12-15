@@ -1,5 +1,6 @@
-<x-app-layout>
-    
+@extends('layouts.app')
+
+@section('content')
     @if($heroBench)
         <!-- Hero Section -->
         <div class="relative h-[85vh] w-full overflow-hidden">
@@ -55,4 +56,4 @@
         <livewire:bench-grid :initialBenches="$heroBench ? null : null" /> 
         {{-- Passing null as we want Livewire to fetch all benches, or we could pass initial if we wanted SSR optimization --}}
     </main>
-</x-app-layout>
+@endsection
