@@ -35,9 +35,9 @@
                         const data = await response.json();
                         this.likes = Math.max(this.likes, data.likes); // Keep optimistic value if server is stale
                     } catch (e) {
-                        // Revert on error
-                        this.userLiked = false;
-                        this.likes--;
+                        // Revert on error -> DISABLED to prevent UI flicker on unstable connections
+                        // this.userLiked = false;
+                        // this.likes--;
                         console.error('Like failed', e);
                     }
                 }
