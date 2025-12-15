@@ -40,6 +40,12 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                     {{ $bench->created_at->format('F j, Y') }}
                                 </div>
+                                
+                                <!-- 3. Likes Overlay (Top Right) - Moved from details column -->
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-red-500 text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                    {{ $bench->likes }}
+                                </div>
                             </div>
                         </template>
 
@@ -125,13 +131,6 @@
                             {{ $bench->town ?? $bench->province ?? '' }}, {{ $bench->country }}
                         </div>
                     </div>
-                    
-                    <button class="flex flex-col items-center gap-1 group">
-                        <div class="p-4 rounded-full bg-red-50 text-red-500 group-hover:bg-red-100 transition-colors shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                        </div>
-                        <span class="font-bold text-gray-900">{{ $bench->likes }}</span>
-                    </button>
                 </div>
 
                 <div class="prose prose-lg text-gray-600 mb-8 leading-relaxed">
