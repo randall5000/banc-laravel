@@ -37,7 +37,18 @@
                 <nav class="hidden md:flex items-center gap-8">
                     <a href="{{ route('home') }}" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">Discover</a>
                     <!-- For "See Benches Near Me", we can link to home with a query param or just home for now until we have a specific route/filter logic -->
-                    <button onclick="document.querySelector('[wire\\:click=\'setUserLocation\']')?.click() ?? alert('Please allow location access on the grid below')" class="text-sm font-medium text-gray-600 hover:text-black transition-colors">See Benches Near Me</button>
+                    <button 
+                        onclick="navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                Livewire.dispatch('update-user-location', { lat: pos.coords.latitude, lng: pos.coords.longitude });
+                                document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
+                            },
+                            (err) => alert('Please allow location access to find benches near you.')
+                        )"
+                        class="text-sm font-medium text-gray-600 hover:text-black transition-colors"
+                    >
+                        See Benches Near Me
+                    </button>
                     <a href="{{ route('benches.create') }}" class="text-white px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style="background-color: #FF385C;">
                         Add Bench
                     </a>

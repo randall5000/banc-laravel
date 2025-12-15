@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Bench;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\On;
 
 class BenchGrid extends Component
 {
@@ -122,6 +123,7 @@ class BenchGrid extends Component
         ]);
     }
 
+    #[On('update-user-location')]
     public function setUserLocation($lat, $lng)
     {
         $this->userLocation = ['lat' => $lat, 'lng' => $lng];
