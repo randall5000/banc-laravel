@@ -166,13 +166,19 @@
                 @endif
                 
                 @if($bench->latitude && $bench->longitude)
-                    <div class="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl text-blue-900 text-sm flex items-start gap-3">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 text-blue-600 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
-                         <div>
-                            <strong>Coordinates:</strong> {{ $bench->latitude }}, {{ $bench->longitude }}
-                            <br/>
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ $bench->latitude }},{{ $bench->longitude }}" target="_blank" class="underline hover:text-blue-700 mt-1 inline-block">
-                                View location on Google Maps &rarr;
+                    <div class="mb-8 rounded-xl overflow-hidden border border-gray-100 shadow-sm relative z-0">
+                        <iframe 
+                            width="100%" 
+                            height="250" 
+                            frameborder="0" 
+                            style="border:0"
+                            src="https://maps.google.com/maps?q={{ $bench->latitude }},{{ $bench->longitude }}&hl=en&z=15&output=embed"
+                            allowfullscreen>
+                        </iframe>
+                        <div class="bg-gray-50 px-4 py-2 text-xs text-gray-500 flex justify-between items-center border-t border-gray-100">
+                            <span class="font-mono">{{ number_format($bench->latitude, 5) }}, {{ number_format($bench->longitude, 5) }}</span>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ $bench->latitude }},{{ $bench->longitude }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                Open External Map <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             </a>
                         </div>
                     </div>
