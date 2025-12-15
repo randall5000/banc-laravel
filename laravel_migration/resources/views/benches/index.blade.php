@@ -3,12 +3,12 @@
 @section('content')
     @if($heroBench)
         <!-- Hero Section -->
-        <div class="relative h-[450px] w-full overflow-hidden">
+        <a href="{{ route('benches.show', $heroBench->id) }}" class="block relative h-[450px] w-full overflow-hidden group cursor-pointer">
             <div class="absolute inset-0">
                 <img 
                     src="{{ $heroBench->image_url }}" 
                     alt="Featured Bench in {{ $heroBench->location }}"
-                    class="h-full w-full object-cover"
+                    class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"></div>
             </div>
@@ -49,7 +49,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     @endif
 
     <main class="max-w-7xl mx-auto px-6 py-12">
