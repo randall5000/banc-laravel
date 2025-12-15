@@ -12,6 +12,7 @@ class BenchPhoto extends Model
     protected $fillable = [
         'bench_id',
         'photo_url',
+        'user_name',
         'is_primary',
         'display_order',
     ];
