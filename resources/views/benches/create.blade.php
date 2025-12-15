@@ -17,6 +17,25 @@
                 <input type="text" name="user_name" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none" placeholder="Your name">
             </div>
 
+            <!-- Tribute Details (Optional) -->
+            <div class="mb-6 p-5 bg-gray-50 rounded-xl border border-gray-100" x-data="{ isTribute: false }">
+                <div class="flex items-center gap-3 mb-4">
+                    <input type="checkbox" id="is_tribute" name="is_tribute" value="1" x-model="isTribute" class="w-5 h-5 text-black border-gray-300 rounded focus:ring-black">
+                    <label for="is_tribute" class="font-medium text-gray-900 cursor-pointer select-none">Is this a Tribute Bench?</label>
+                </div>
+
+                <div x-show="isTribute" x-transition class="space-y-4 pt-2 border-t border-gray-200 mt-2" style="display: none;">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">In Memory Of (Name)</label>
+                        <input type="text" name="tribute_name" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none" placeholder="e.g. John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Date (Optional)</label>
+                        <input type="date" name="tribute_date" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-black focus:border-transparent transition-all outline-none">
+                    </div>
+                </div>
+            </div>
+
             <!-- Image Upload -->
             <div class="mb-8" x-data="{ images: [] }">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Photos</label>
