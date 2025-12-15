@@ -3,7 +3,7 @@
 @section('content')
     @if($heroBench)
         <!-- Hero Section -->
-        <div class="relative h-[42vh] w-full overflow-hidden">
+        <div class="relative h-[450px] w-full overflow-hidden">
             <div class="absolute inset-0">
                 <img 
                     src="{{ $heroBench->image_url }}" 
