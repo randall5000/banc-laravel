@@ -137,7 +137,7 @@ class BenchController extends Controller
 
         return redirect()->route('benches.show', $bench);
     }
-    }
+
 
     /**
      * Like a bench.
