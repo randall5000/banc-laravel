@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. A scenic bench in New Zealand
         Bench::create([
-            'image_url' => 'https://images.unsplash.com/photo-1544985336-65123d45e546?q=80&w=2670&auto=format&fit=crop',
+            'image_url' => 'https://placehold.co/800x600/2563eb/white?text=Lake+Tekapo+Bench', // Blue placeholder
             'location' => 'Lake Tekapo',
             'town' => 'Tekapo',
             'province' => 'Canterbury',
@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. A tribute bench in London
         Bench::create([
-            'image_url' => 'https://images.unsplash.com/photo-1550955214-e9104fa28400?q=80&w=2670&auto=format&fit=crop',
+            'image_url' => 'https://placehold.co/800x600/db2777/white?text=Hyde+Park+Bench', // Pink placeholder
             'location' => 'Hyde Park',
             'town' => 'London',
             'province' => 'England',
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
 
         // 3. A rustic bench in Canada (Banff)
         Bench::create([
-            'image_url' => 'https://images.unsplash.com/photo-1506259091721-347f793bb76b?q=80&w=2670&auto=format&fit=crop',
+            'image_url' => 'https://placehold.co/800x600/059669/white?text=Moraine+Lake+Bench', // Green placeholder
             'location' => 'Moraine Lake',
             'town' => 'Banff',
             'province' => 'Alberta',
@@ -58,7 +58,7 @@ class DatabaseSeeder extends Seeder
 
         // 4. A city bench in New York
         Bench::create([
-            'image_url' => 'https://images.unsplash.com/photo-1520182601235-98522e84d9f6?q=80&w=2670&auto=format&fit=crop',
+            'image_url' => 'https://placehold.co/800x600/ea580c/white?text=Central+Park+Bench', // Orange placeholder
             'location' => 'Central Park',
             'town' => 'New York',
             'province' => 'New York',
@@ -73,7 +73,7 @@ class DatabaseSeeder extends Seeder
         
          // 5. A coastal bench in Italy
         Bench::create([
-            'image_url' => 'https://images.unsplash.com/photo-1533166642054-94c65349553b?q=80&w=2670&auto=format&fit=crop',
+            'image_url' => 'https://placehold.co/800x600/7c3aed/white?text=Amalfi+Coast+Bench', // Purple placeholder
             'location' => 'Amalfi Coast',
             'town' => 'Positano',
             'province' => 'Salerno',
