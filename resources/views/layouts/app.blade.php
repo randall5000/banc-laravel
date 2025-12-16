@@ -40,9 +40,15 @@
                     <button 
                         onclick="navigator.geolocation.getCurrentPosition(
                             (pos) => {
-                                Livewire.dispatch('update-user-location', { lat: pos.coords.latitude, lng: pos.coords.longitude });
-                                const main = document.querySelector('main');
-                                if(main) main.scrollIntoView({ behavior: 'smooth' });
+                                const lat = pos.coords.latitude;
+                                const lng = pos.coords.longitude;
+                                if (window.location.pathname === '/') {
+                                    Livewire.dispatch('update-user-location', { lat, lng });
+                                    const main = document.querySelector('main');
+                                    if(main) main.scrollIntoView({ behavior: 'smooth' });
+                                } else {
+                                    window.location.href = '/?lat=' + lat + '&lng=' + lng;
+                                }
                             },
                             (err) => alert('Please allow location access to find benches near you.')
                         )"
@@ -80,9 +86,15 @@
                         <button 
                             @click="mobileMenuOpen = false; navigator.geolocation.getCurrentPosition(
                                 (pos) => {
-                                    Livewire.dispatch('update-user-location', { lat: pos.coords.latitude, lng: pos.coords.longitude });
-                                    const main = document.querySelector('main');
-                                    if(main) main.scrollIntoView({ behavior: 'smooth' });
+                                    const lat = pos.coords.latitude;
+                                    const lng = pos.coords.longitude;
+                                    if (window.location.pathname === '/') {
+                                        Livewire.dispatch('update-user-location', { lat, lng });
+                                        const main = document.querySelector('main');
+                                        if(main) main.scrollIntoView({ behavior: 'smooth' });
+                                    } else {
+                                        window.location.href = '/?lat=' + lat + '&lng=' + lng;
+                                    }
                                 },
                                 (err) => alert('Please allow location access to find benches near you.')
                             )"

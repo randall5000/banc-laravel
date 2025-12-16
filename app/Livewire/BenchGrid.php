@@ -25,6 +25,17 @@ class BenchGrid extends Component
         'sortBy' => ['except' => 'newest', 'as' => 'sort'],
     ];
 
+    public function mount()
+    {
+        if (request()->has(['lat', 'lng'])) {
+            $this->userLocation = [
+                'lat' => request()->query('lat'),
+                'lng' => request()->query('lng')
+            ];
+            $this->sortBy = 'nearest';
+        }
+    }
+
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['searchQuery', 'selectedCountry'])) {
