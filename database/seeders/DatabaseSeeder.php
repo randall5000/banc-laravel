@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
                 'is_tribute' => true,
                 'tribute_name' => 'John Smith',
                 'tribute_date' => '2023-05-15',
+                'tribute_message' => 'Always in our hearts, feeding the ducks together.',
                 'likes' => 45,
             ],
             [
@@ -74,6 +75,8 @@ class DatabaseSeeder extends Seeder
                 'description' => 'A quiet spot amidst the bustling city.',
                 'is_tribute' => true,
                 'tribute_name' => 'The dreamers',
+                'tribute_date' => '2024-01-01',
+                'tribute_message' => 'For all those who dare to dream.',
                 'likes' => 89,
             ],
             [
