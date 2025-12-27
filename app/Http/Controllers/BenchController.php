@@ -21,6 +21,14 @@ class BenchController extends Controller
     }
 
     /**
+     * Display a listing of the resource for API.
+     */
+    public function apiIndex()
+    {
+        return response()->json(Bench::with('photos')->latest()->get());
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Bench $bench)

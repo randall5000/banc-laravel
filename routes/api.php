@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\BenchController;
+use App\Http\Controllers\BenchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,5 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// If you want to purge raw API endpoints similar to Next.js API routes
-// Route::get('/benches', [BenchController::class, 'index']);
+Route::get('/benches', [BenchController::class, 'apiIndex']);
