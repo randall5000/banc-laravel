@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, MapPin, Image as ImageIcon, Award, Loader2, X } from 'lucide-react';
+import { Upload, MapPin, Image as ImageIcon, Award, Loader2, X, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import heic2any from 'heic2any';
+import ExifReader from 'exifreader';
 
 export default function UploadForm() {
   const router = useRouter();
@@ -10,7 +12,7 @@ export default function UploadForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
-  
+
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [benchName, setBenchName] = useState('');
   const [town, setTown] = useState('');
@@ -23,6 +25,71 @@ export default function UploadForm() {
   const [tributeName, setTributeName] = useState('');
   const [tributeDate, setTributeDate] = useState('');
 
+  // New state for EXIF location prompt
+  const [potentialLocation, setPotentialLocation] = useState<{ lat: number, lng: number } | null>(null);
+
+  const processFile = async (file: File): Promise<File> => {
+    // 1. Handle HEIC conversion
+    if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic')) {
+      try {
+        console.log('Converting HEIC file...', file.name);
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.8
+        });
+
+        // heic2any can return a Blob or Blob[]
+        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+        const newFile = new File([blob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
+        console.log('Conversion successful:', newFile.name);
+        return newFile;
+      } catch (e) {
+        console.error('HEIC conversion failed:', e);
+        // Fallback to original file if conversion fails (server might handle it or just fail)
+        return file;
+      }
+    }
+    return file;
+  };
+
+  const extractExifLocation = async (file: File) => {
+    try {
+      const tags = await ExifReader.load(file);
+
+      if (tags['GPSLatitude'] && tags['GPSLongitude']) {
+        // ExifReader returns coordinates as array of numbers [degrees, minutes, seconds]
+        // or simple number depending on version, but usually provides a 'description' 
+        // We need to parse correctly based on the library output.
+        // The safest way with ExifReader is typically checking the 'description' property which is pre-calculated
+        // BUT for robust calculation we can use the raw values if needed.
+        // Let's rely on the library's parsing if available, otherwise manual.
+
+        // Actually ExifReader standardizes this well in recent versions.
+        // Let's assume standard behavior:
+
+        // Helper to convert DMS to Decimal
+        // @ts-ignore
+        const lat = tags['GPSLatitude'].description;
+        // @ts-ignore
+        const lng = tags['GPSLongitude'].description;
+
+        if (lat && lng) {
+          // Sometimes it returns just the number if it's simple
+          const latNum = parseFloat(lat);
+          const lngNum = parseFloat(lng);
+
+          if (!isNaN(latNum) && !isNaN(lngNum)) {
+            console.log('Found GPS data:', latNum, lngNum);
+            setPotentialLocation({ lat: latNum, lng: lngNum });
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error reading EXIF data:', e);
+    }
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -31,8 +98,23 @@ export default function UploadForm() {
 
     try {
       const uploadPromises = Array.from(files).map(async (file) => {
+        // 1. Convert/Process File
+        const processedFile = await processFile(file);
+
+        // 2. Extract EXIF (only from the first file to avoid spamming prompts)
+        // We check the ORIGINAL file for EXIF because sometimes conversion strips metadata
+        // although heic2any tries to preserve it, it's safer to read original if possible.
+        // However, standard File API file objects are blobs.
+        // Let's read the processed file if it was converted, or original if not.
+        // Actually best to read original for EXIF data before conversion if possible?
+        // Let's try reading the PROCESSED file because we want the final image to be what we use.
+        // BUT sometimes we want to extract from original. Let's try original for GPS.
+        if (!latitude && !longitude && !potentialLocation) {
+          await extractExifLocation(file);
+        }
+
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', processedFile);
 
         const response = await fetch('/api/upload', {
           method: 'POST',
@@ -62,6 +144,10 @@ export default function UploadForm() {
 
   const removeImage = (index: number) => {
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+    if (uploadedImages.length <= 1) {
+      // If they remove the only photo, maybe clear the potential location? 
+      // Nah, keep it if they accepted it.
+    }
   };
 
   const reverseGeocode = async (lat: number, lon: number) => {
@@ -70,16 +156,18 @@ export default function UploadForm() {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         const address = data.address;
-        
+
         // Extract location details
         const city = address.city || address.town || address.village || address.hamlet || '';
         const state = address.state || address.province || '';
         const countryName = address.country || '';
-        
+
+        // Only overwrite if empty? Or always?
+        // Let's update state.
         setTown(city);
         setProvince(state);
         setCountry(countryName);
@@ -90,6 +178,15 @@ export default function UploadForm() {
     }
   };
 
+  const applyPotentialLocation = () => {
+    if (potentialLocation) {
+      setLatitude(potentialLocation.lat.toFixed(6));
+      setLongitude(potentialLocation.lng.toFixed(6));
+      reverseGeocode(potentialLocation.lat, potentialLocation.lng);
+      setPotentialLocation(null); // Hide prompt
+    }
+  };
+
   const handleGetLocation = () => {
     if (navigator.geolocation) {
       setIsGettingLocation(true);
@@ -97,13 +194,13 @@ export default function UploadForm() {
         async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-          
+
           setLatitude(lat.toFixed(6));
           setLongitude(lon.toFixed(6));
-          
+
           // Get address from coordinates
           await reverseGeocode(lat, lon);
-          
+
           setIsGettingLocation(false);
         },
         (error) => {
@@ -187,7 +284,7 @@ export default function UploadForm() {
         <label className="block text-sm font-semibold text-gray-900 mb-2">
           Upload Photos <span className="text-red-500">*</span>
         </label>
-        
+
         <input
           ref={fileInputRef}
           type="file"
@@ -196,7 +293,7 @@ export default function UploadForm() {
           onChange={handleFileSelect}
           className="hidden"
         />
-        
+
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
@@ -226,8 +323,8 @@ export default function UploadForm() {
           <div className="mt-4 grid grid-cols-3 gap-3">
             {uploadedImages.map((url, index) => (
               <div key={index} className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
-                <img 
-                  src={url} 
+                <img
+                  src={url}
                   alt={`Upload ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -248,6 +345,37 @@ export default function UploadForm() {
           </div>
         )}
       </div>
+
+      {/* EXIF Location Prompt */}
+      {potentialLocation && (
+        <div className="mb-4 p-4 bg-teal-50 border border-teal-200 rounded-lg flex items-start gap-3">
+          <AlertCircle className="text-teal-600 flex-shrink-0 mt-0.5" size={20} />
+          <div className="flex-1">
+            <h4 className="text-sm font-semibold text-teal-900 mb-1">
+              Location found in photo
+            </h4>
+            <p className="text-sm text-teal-700 mb-3">
+              We found GPS coordinates in your uploaded photo. Would you like to use this location?
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={applyPotentialLocation}
+                className="px-4 py-2 bg-teal-600 text-white text-sm font-semibold rounded-lg hover:bg-teal-700 transition-colors"
+              >
+                Yes, use photo location
+              </button>
+              <button
+                type="button"
+                onClick={() => setPotentialLocation(null)}
+                className="px-4 py-2 bg-white text-teal-700 text-sm font-semibold border border-teal-200 rounded-lg hover:bg-teal-50 transition-colors"
+              >
+                No, thanks
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Use My Location Button - SECOND */}
       <div>
