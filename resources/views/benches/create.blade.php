@@ -3,7 +3,7 @@
 @section('content')
 <div class="max-w-3xl mx-auto px-6 py-12">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Add a New Bench</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Add a New Bench (Legacy)</h1>
         <p class="text-gray-600">Share a beautiful resting spot with the world.</p>
     </div>
 

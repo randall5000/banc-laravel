@@ -331,7 +331,7 @@ export default function UploadForm() {
 
       {/* 3. Map Picker & Bench Name */}
       <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-2">Bench Location <span className="text-red-500">*</span></label>
+        <label className="block text-sm font-semibold text-gray-900 mb-2">Bench Location (New Map Form) <span className="text-red-500">*</span></label>
         <p className="text-xs text-gray-500 mb-2">Drag the pin to the exact location of the bench.</p>
 
         {/* Map */}
