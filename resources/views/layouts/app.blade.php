@@ -56,7 +56,7 @@
                     >
                         Benches near me
                     </button>
-                    <a href="{{ route('benches.create') }}" class="text-white px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style="background-color: #FF385C;">
+                    <a href="/upload" class="text-white px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity" style="background-color: #FF385C;">
                         Add Bench
                     </a>
                 </nav>
@@ -102,7 +102,7 @@
                         >
                             Benches near me
                         </button>
-                        <a href="{{ route('benches.create') }}" class="py-2 border-b border-gray-100 text-[#FF385C]">Add Bench</a>
+                        <a href="/upload" class="py-2 border-b border-gray-100 text-[#FF385C]">Add Bench</a>
                     </nav>
                 </div>
             </div>
