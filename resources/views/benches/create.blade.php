@@ -102,7 +102,7 @@
                     @error('location') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
-                <div>
+                <div class="col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
                     <div class="relative">
                         <select name="country" x-model="selectedCountry" @change="updateProvinces()" class="w-full rounded-lg border-gray-300 focus:ring-black focus:border-black appearance-none bg-white py-2 pl-3 pr-8" required>
@@ -117,7 +117,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2 grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">State / Province</label>
                         
