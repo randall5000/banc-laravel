@@ -368,11 +368,12 @@ export default function UploadForm() {
           <input type="text" value={province} onChange={(e) => setProvince(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent" placeholder="Auto-filled" />
         </div>
 
-        {/* Country - Full width on mobile/desktop depending on pref, but separated from State to avoid overlap */}
-        <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-gray-900 mb-2">Country <span className="text-red-500">*</span></label>
-          <input type="text" value={country} onChange={(e) => setCountry(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent" placeholder="Auto-filled" required />
-        </div>
+      </div>
+
+      {/* Country - Separated container to prevent overlapping */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-900 mb-2">Country <span className="text-red-500">*</span></label>
+        <input type="text" value={country} onChange={(e) => setCountry(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent" placeholder="Auto-filled" required />
       </div>
 
       {/* 5. Description & Tribute */}
