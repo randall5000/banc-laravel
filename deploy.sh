@@ -3,6 +3,9 @@
 # deploy.sh - Deployment script for Cloudways/Production
 
 echo "🚀 Starting Deployment..."
+echo "📍 Current Server Path: $(pwd)"
+echo "📂 Checking for probe file..."
+ls -l public/probe.txt || echo "❌ probe.txt NOT found in $(pwd)/public"
 
 # 1. Pull latest changes (uncomment if running from git hook)
 # git pull origin main
