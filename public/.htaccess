@@ -18,6 +18,10 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Proxy /upload to Next.js (Port 3000)
+    RewriteCond %{REQUEST_URI} ^/upload
+    RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
