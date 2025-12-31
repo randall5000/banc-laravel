@@ -29,19 +29,12 @@ npm run build
 
 echo "✅ Build Complete!"
 
-# 6. Reminder for Node Process
+# 6. Restart Next.js Server
+echo "🔄 Restarting PM2 Process..."
+pm2 restart banconaut-v3 || npx pm2 restart banconaut-v3 || echo "⚠️  Could not restart PM2 automatically. Please run 'pm2 restart banconaut-v3' manually."
+
 echo "
 ----------------------------------------------------------------------
 🚀 Deployment Finished!
-
-⚠️  IMPORTANT: NEXT.JS SERVER RESTART REQUIRED
-Since this is a Next.js app, you must restart the node process.
-
-If you are using PM2 (Recommended):
-   pm2 restart banconaut-v3
-
-If you are running manually:
-   1. Kill the old 'npm start' or 'next start' process.
-   2. Run: npm start
 ----------------------------------------------------------------------
 "
