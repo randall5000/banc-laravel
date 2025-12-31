@@ -1,0 +1,3 @@
+Deployment Verification File
+Created: 2025-12-31
+If you can read this, the git deployment is correctly updating the server's web root.
